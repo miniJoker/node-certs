@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en" class="notranslate" translate="no">
+  <head>
+    <meta name="google" content="notranslate"/>
+    <meta charset="utf-8"/>
+    <title>MVP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, private" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-white bg-primary">
+              <label>Создать сертификат</label>
+            </div>
+            <div class="card-body mb-3">
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">Товар</span>
+                    </div>
+                    <input id="item" type="text" class="form-control"/>
+                  </div>  
+                </div>
+                <div class="col-md-4">
+                  <div class="input-group mb-3">
+                    <input id="count" type="text" class="form-control"/>
+                    <div class="input-group-append">
+                      <span class="input-group-text">Кол-во</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Кому отдать</span>
+                </div>
+                <input id="recipient" type="text" class="form-control"/>
+              </div>
+              <button class="btn btn-primary" id="createCert">Создать</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          One of three columns
+        </div>
+        <div class="col-md-3">
+          <div class="alert alert-primary" role="alert">
+            <span>Пользователь: </span>
+            <span id="currentUser"></span>
+          </div>
+          <div class="card">
+            <div class="card-header text-white bg-primary">
+              <label>Войти (создать)</label>
+            </div>
+            <div class="card-body">
+              <input id="inputForUser" class="form-control" type="text" placeholder="Буквы и цифры"></input>
+              <br>
+              <button class="btn btn-primary" id="setUser">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-white bg-primary">
+              <label>Созданные сертификаты</label>
+            </div>
+            <div id="createdCerts"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-white bg-primary">
+              <label>Полученные сертификаты</label>
+            </div>
+            <div id="receivedCerts"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let user = "";
+    let certsCardTemplate = $('<div class="card-body"><h5 class="card-title itemText">asdasd</h5><p class="card-text creatorText">От кого: <span></span></p><p class="card-text recipientText">Кому: <span></span></p><footer>Кол-во: <span class="countText"></span></footer></div>');
+
+    function getCreated() {
+      return fetch("http://127.0.0.1:3000/get_created").then(function(response) {
+        return response.json();
+      }).then(function(createdCerts) {
+        console.log(createdCerts);
+        $("#createdCerts").empty();
+        createdCerts.forEach(function(certs) {
+          certsCard = certsCardTemplate.clone();
+          $(".itemText", certsCard).text(certs.item);
+          $(".creatorText", certsCard).remove();
+          $(".recipientText span", certsCard).text(certs.recipient);
+          $(".countText", certsCard).text(certs.count);
+          $("#createdCerts").append(certsCard);
+        })
+      });
+    }
+
+    function getReceived() {
+      return fetch("http://127.0.0.1:3000/get_recived").then(function(response) {
+        return response.json();
+      }).then(function(receivedCerts) {
+        console.log(receivedCerts);
+        $("#receivedCerts").empty();
+        receivedCerts.forEach(function(certs) {
+          certsCard = certsCardTemplate.clone();
+          $(".itemText", certsCard).text(certs.item);
+          $(".recipientText", certsCard).remove();
+          $(".creatorText span", certsCard).text(certs.creator);
+          $(".countText", certsCard).text(certs.count);
+          $("#receivedCerts").append(certsCard);
+        })
+      });
+    }
+
+    $("#createCert").click(function() {
+      certObj = {};
+      certObj.item = $("#item").val();
+      certObj.count = $("#count").val();
+      certObj.recipient = $("#recipient").val();
+      return fetch("http://127.0.0.1:3000/create_cert", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(certObj)
+      }).then(function(response) {
+        return response.text();
+      }).then(function(text) {
+        console.log(text);
+      });
+    })
+
+    $("#setUser").click(function(){
+      var user = $(inputForUser).val();
+      var regExp = new RegExp("^[a-zA-Zа-яА-Я0-9]+$");
+      var matchRegExp = regExp.test(user);
+      if (!matchRegExp) {
+        alert("Только буквы и цифры");
+        return false;
+      }
+      return fetch("http://127.0.0.1:3000/set_user", {
+        method: "POST",
+        body: user
+      }).then(function(response){
+        return response.text();
+      }).then(function(text) {
+        $("#currentUser").text(text);
+        return Promise.all([getCreated(), getReceived()]);
+      });
+    })
+
+
+    // var file = JSON.parse(fs.readFileSync('./data.json', 'utf-8'));
+    // $("#login").text(file.user1.login);
+    // $("#pass").text(file.user1.password);
+    // $("#btn").click(function(){
+    //   file.user1.password = 23456;
+    //   fs.writeFileSync('./data.json', JSON.stringify(file, null, 2));  
+    // })
+  </script>
+</html>

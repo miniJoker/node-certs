@@ -1,0 +1,44 @@
+{
+  "1231": {},
+  "init": "true",
+  "qqq": {
+    "createdCerts": [
+      {
+        "item": "qwe",
+        "count": "1",
+        "recipient": "www",
+        "id": "qqq0",
+        "creator": "qqq"
+      }
+    ],
+    "recivedCerts": [
+      {
+        "item": "123",
+        "count": "2",
+        "recipient": "qqq",
+        "id": "www0",
+        "creator": "www"
+      }
+    ]
+  },
+  "www": {
+    "recivedCerts": [
+      {
+        "item": "qwe",
+        "count": "1",
+        "recipient": "www",
+        "id": "qqq0",
+        "creator": "qqq"
+      }
+    ],
+    "createdCerts": [
+      {
+        "item": "123",
+        "count": "2",
+        "recipient": "qqq",
+        "id": "www0",
+        "creator": "www"
+      }
+    ]
+  }
+}
