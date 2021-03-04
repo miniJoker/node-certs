@@ -24,7 +24,7 @@ const server = http.createServer((req, res) => {
 	console.log(url);
 	if (url == "/") {
 		res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
-  	fs.createReadStream('./mvp.html').pipe(res);
+  		fs.createReadStream('./mvp.html').pipe(res);
 	} else if (url == "/set_user") {
 		let reqData = '';
 		req.on('data', chunk => {
@@ -82,16 +82,13 @@ const server = http.createServer((req, res) => {
 				res.end(JSON.stringify(data[user].createdCerts.length));
 			});
 		} else {
+			res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
 			res.end();
 		}
 	} else {
+		res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
 		res.end();
 	}
-
-
-  
 });
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+server.listen(port);
