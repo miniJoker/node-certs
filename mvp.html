@@ -96,10 +96,11 @@
   </body>
   <script>
     let user = "";
+    let host = window.location.origin;
     let certsCardTemplate = $('<div class="card-body"><h5 class="card-title itemText">asdasd</h5><p class="card-text creatorText">От кого: <span></span></p><p class="card-text recipientText">Кому: <span></span></p><footer>Кол-во: <span class="countText"></span></footer></div>');
 
     function getCreated() {
-      return fetch("http://127.0.0.1:3000/get_created").then(function(response) {
+      return fetch(host+"/get_created").then(function(response) {
         return response.json();
       }).then(function(createdCerts) {
         console.log(createdCerts);
@@ -116,7 +117,7 @@
     }
 
     function getReceived() {
-      return fetch("http://127.0.0.1:3000/get_recived").then(function(response) {
+      return fetch(host+"/get_recived").then(function(response) {
         return response.json();
       }).then(function(receivedCerts) {
         console.log(receivedCerts);
@@ -137,7 +138,7 @@
       certObj.item = $("#item").val();
       certObj.count = $("#count").val();
       certObj.recipient = $("#recipient").val();
-      return fetch("http://127.0.0.1:3000/create_cert", {
+      return fetch(host+"/create_cert", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=utf-8'
@@ -158,7 +159,7 @@
         alert("Только буквы и цифры");
         return false;
       }
-      return fetch("http://127.0.0.1:3000/set_user", {
+      return fetch(host+"/set_user", {
         method: "POST",
         body: user
       }).then(function(response){
@@ -168,14 +169,5 @@
         return Promise.all([getCreated(), getReceived()]);
       });
     })
-
-
-    // var file = JSON.parse(fs.readFileSync('./data.json', 'utf-8'));
-    // $("#login").text(file.user1.login);
-    // $("#pass").text(file.user1.password);
-    // $("#btn").click(function(){
-    //   file.user1.password = 23456;
-    //   fs.writeFileSync('./data.json', JSON.stringify(file, null, 2));  
-    // })
   </script>
 </html>
