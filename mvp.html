@@ -55,7 +55,16 @@
           </div>
         </div>
         <div class="col-md-3">
-          One of three columns
+          <div class="card bg-light">
+            <div class="card-header">
+              Инфо
+            </div>
+            <div class="card-body">
+              <p class="card-text">Вводишь пользователя, входишь.</p>
+              <p class="card-text">Пользователь создается при входе, если не существовал.</p>
+              <p class="card-text">И при создании сертификата, если не существует пользователя из поля "Кому отдать.</p>
+            </div>
+          </div>
         </div>
         <div class="col-md-3">
           <div class="alert alert-primary" role="alert">
@@ -99,6 +108,46 @@
     let host = window.location.origin;
     let certsCardTemplate = $('<div class="card-body"><h5 class="card-title itemText">asdasd</h5><p class="card-text creatorText">От кого: <span></span></p><p class="card-text recipientText">Кому: <span></span></p><footer>Кол-во: <span class="countText"></span></footer></div>');
 
+    $("#createCert").click(function() {
+      certObj = {};
+      certObj.item = $("#item").val();
+      certObj.count = $("#count").val();
+      certObj.recipient = $("#recipient").val();
+      var isRecMatchRegexp = checkUserForRegexp(user);
+      if (!isRecMatchRegexp) return false;
+      return fetch(host+"/create_cert", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(certObj)
+      }).then(function(response) {
+        return response.text();
+      }).then(function(text) {
+        console.log(text);
+      });
+    })
+
+    $("#setUser").click(function(){
+      var user = $(inputForUser).val();
+      var isUserMatchRegexp = checkUserForRegexp(user);
+      if (!isUserMatchRegexp) return false;
+      return login(user);
+    });
+
+    function login(user) {
+      return fetch(host+"/set_user", {
+        method: "POST",
+        body: user
+      }).then(function(response){
+        return response.text();
+      }).then(function(text) {
+        $("#currentUser").text(text);
+        setCoolie("user", text);
+        return Promise.all([getCreated(), getReceived()]);
+      });
+    }
+
     function getCreated() {
       return fetch(host+"/get_created").then(function(response) {
         return response.json();
@@ -133,41 +182,31 @@
       });
     }
 
-    $("#createCert").click(function() {
-      certObj = {};
-      certObj.item = $("#item").val();
-      certObj.count = $("#count").val();
-      certObj.recipient = $("#recipient").val();
-      return fetch(host+"/create_cert", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(certObj)
-      }).then(function(response) {
-        return response.text();
-      }).then(function(text) {
-        console.log(text);
-      });
-    })
-
-    $("#setUser").click(function(){
-      var user = $(inputForUser).val();
+    function checkUserForRegexp(user) {
       var regExp = new RegExp("^[a-zA-Zа-яА-Я0-9]+$");
       var matchRegExp = regExp.test(user);
       if (!matchRegExp) {
         alert("Только буквы и цифры");
         return false;
+      } else {
+        return true;
       }
-      return fetch(host+"/set_user", {
-        method: "POST",
-        body: user
-      }).then(function(response){
-        return response.text();
-      }).then(function(text) {
-        $("#currentUser").text(text);
-        return Promise.all([getCreated(), getReceived()]);
-      });
-    })
+    }
+
+    function getCookie(name) {
+      let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+      ));
+      return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function setCoolie(name, value) {
+      document.cookie = name+"="+value;
+    }
+
+    var userFromCookie = getCookie("user");
+    if (userFromCookie != undefined) {
+      login(userFromCookie);
+    }
   </script>
 </html>
