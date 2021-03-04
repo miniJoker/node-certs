@@ -57,7 +57,7 @@
         <div class="col-md-3">
           <div class="card bg-light">
             <div class="card-header">
-              Инфо
+              <span>Инфо</span>
             </div>
             <div class="card-body">
               <p class="card-text">Вводишь пользователя, входишь.</p>
@@ -87,18 +87,18 @@
       <div class="row">
         <div class="col-md-6">
           <div class="card">
-            <div class="card-header text-white bg-primary">
+            <div class="card-header text-white bg-primary mb-3">
               <label>Созданные сертификаты</label>
             </div>
-            <div id="createdCerts"></div>
+            <div id="createdCerts" class="card-columns"></div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card">
-            <div class="card-header text-white bg-primary">
+            <div class="card-header text-white bg-primary mb-3">
               <label>Полученные сертификаты</label>
             </div>
-            <div id="receivedCerts"></div>
+            <div id="receivedCerts" class="card-columns"></div>
           </div>
         </div>
       </div>
@@ -108,14 +108,14 @@
   <script>
     let user = "";
     let host = window.location.origin;
-    let certsCardTemplate = $('<div class="card-body"><h5 class="card-title itemText">asdasd</h5><p class="card-text creatorText">От кого: <span></span></p><p class="card-text recipientText">Кому: <span></span></p><footer>Кол-во: <span class="countText"></span></footer></div>');
+    let certsCardTemplate = $('<div class="card"><div class="card-header"><span class="itemText"></span></div><div class="card-body"><p class="card-text creatorText">От кого: <span></span></p><p class="card-text recipientText">Кому: <span></span></p><footer>Кол-во: <span class="countText"></span></footer></div></div>');
 
     $("#createCert").click(function() {
       certObj = {};
       certObj.item = $("#item").val();
       certObj.count = $("#count").val();
       certObj.recipient = $("#recipient").val();
-      var isRecMatchRegexp = checkUserForRegexp(user);
+      var isRecMatchRegexp = checkUserForRegexp(certObj.recipient);
       if (!isRecMatchRegexp) return false;
       return fetch(host+"/create_cert", {
         method: 'POST',
